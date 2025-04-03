@@ -1,0 +1,34 @@
+// calculate number of swaps required to sort using insertion sort
+#include <stdio.h>
+
+void insertionsort(int a[],int n)
+{
+    int swaps=0;
+    for(int i=1;i<n;i++)
+    {
+        int curr=a[i];
+        int j=i-1;
+        while(j>=0 && a[j]>curr)
+        {
+            a[j+1]=a[j];
+            j--;
+            swaps+=1;
+        }
+        a[j+1]=curr;
+    }
+    printf(" number of swaps are %d",swaps);
+}
+
+int main()
+{
+    int n;
+    printf("enter the value of n:");
+    scanf("%d",&n);
+    int a[n];
+    printf("enter the array elements\n");
+    for(int i=0;i<n;i++)
+    {
+        scanf("%d",&a[i]);
+    }
+    insertionsort(a,n);
+}
