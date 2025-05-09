@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SIZE 100
+
+// Structure of a tree node
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+// Function to create a new tree node
+struct Node* newNode(int value) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = value;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+// Queue for level order traversal
+struct Node* queue[MAX_SIZE];
+int front = 0, rear = -1;
+
+// Function to enqueue a node
+void enqueue(struct Node* node) {
+    if (rear == MAX_SIZE - 1) return;  // Queue overflow
+    queue[++rear] = node;
+}
+
+// Function to dequeue a node
+struct Node* dequeue() {
+    if (front > rear) return NULL;  // Queue underflow
+    return queue[front++];
+}
+
+// Function to print level order traversal
+void levelOrder(struct Node* root) {
+    if (root == NULL) return;
+
+    enqueue(root);  // Start with the root
+
+    while (front <= rear) {
+        int levelSize = rear - front + 1;  // Nodes at current level
+
+        printf("[");
+        for (int i = 0; i < levelSize; i++) {
+            struct Node* currentNode = dequeue();
+            printf("%d", currentNode->data);
+            if (i < levelSize - 1) printf(", ");
+
+            // Enqueue left and right children if they exist
+            if (currentNode->left) enqueue(currentNode->left);
+            if (currentNode->right) enqueue(currentNode->right);
+        }
+        printf("] ");
+    }
+}
+
+int main() {
+    // Constructing the binary tree
+    struct Node* root = newNode(5);
+    root->left = newNode(12);
+    root->right = newNode(13);
+
+    root->left->left = newNode(7);
+    root->left->right = newNode(14);
+    root->right->right = newNode(2);
+
+    root->left->left->left = newNode(17);
+    root->left->left->right = newNode(23);
+    root->left->right->left = newNode(27);
+    root->left->right->right = newNode(3);
+    root->right->right->left = newNode(8);
+    root->right->right->right = newNode(11);
+
+    printf("Level Order Traversal: ");
+    levelOrder(root);
+    printf("\n");
+
+    return 0;
+}
