@@ -1,0 +1,94 @@
+#include <iostream>
+#include <stack>
+#include <string>
+using namespace std;
+
+struct Node {
+    char val;
+    Node* left;
+    Node* right;
+    Node(char v) : val(v), left(NULL), right(NULL) {}
+};
+
+// Check operator precedence
+int precedence(char op) {
+    if (op == '+' || op == '-') return 1;
+    if (op == '*' || op == '/') return 2;
+    return 0;
+}
+
+// Check if operator
+bool isOperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/');
+}
+
+// Convert infix to postfix
+string infixToPostfix(string infix) {
+    stack<char> st;
+    string postfix;
+    for (char c : infix) {
+        if (c == ' ') continue;
+
+        if (isalnum(c)) {
+            postfix += c;
+        } else if (c == '(') {
+            st.push(c);
+        } else if (c == ')') {
+            while (!st.empty() && st.top() != '(') {
+                postfix += st.top(); st.pop();
+            }
+            st.pop();  // pop '('
+        } else if (isOperator(c)) {
+            while (!st.empty() && precedence(st.top()) >= precedence(c)) {
+                postfix += st.top(); st.pop();
+            }
+            st.push(c);
+        }
+    }
+    while (!st.empty()) {
+        postfix += st.top(); st.pop();
+    }
+    return postfix;
+}
+
+// Build expression tree from postfix
+Node* buildTreeFromPostfix(string postfix) {
+    stack<Node*> st;
+    for (char ch : postfix) {
+        if (isalnum(ch)) {
+            st.push(new Node(ch));
+        } else if (isOperator(ch)) {
+            Node* right = st.top(); st.pop();
+            Node* left = st.top(); st.pop();
+            Node* op = new Node(ch);
+            op->left = left;
+            op->right = right;
+            st.push(op);
+        }
+    }
+    return st.top();
+}
+
+// Inorder display (with brackets)
+void inorder(Node* root) {
+    if (!root) return;
+    bool isOp = isOperator(root->val);
+    if (isOp) cout << "(";
+    inorder(root->left);
+    cout << root->val;
+    inorder(root->right);
+    if (isOp) cout << ")";
+}
+
+int main() {
+    string infix = "a + b * (c - d)";
+    string postfix = infixToPostfix(infix);
+
+    Node* root = buildTreeFromPostfix(postfix);
+
+    cout << "Infix expression from tree: ";
+    inorder(root);  // Should print: (a+(b*(c-d)))
+    cout << endl;
+
+    return 0;
+}
