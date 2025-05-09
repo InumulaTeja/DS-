@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Tree node structure
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Create a new tree node
+struct Node* newNode(int value) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->data = value;
+    node->left = node->right = NULL;
+    return node;
+}
+
+// Build complete binary tree from an array
+struct Node* buildCBT(int arr[], int n, int i) {
+    if (i >= n) return NULL;  // Base case: index out of bounds
+
+    // Create a new node for the current element
+    struct Node* root = newNode(arr[i]);
+
+    // Recursively construct the left and right subtrees
+    root->left = buildCBT(arr, n, 2 * i + 1);   // Left child at 2*i + 1
+    root->right = buildCBT(arr, n, 2 * i + 2);   // Right child at 2*i + 2
+
+    return root;
+}
+
+// Print the tree in level order
+void printLevelOrder(struct Node* root) {
+    if (!root) return;
+
+    // Simple queue using an array of pointers
+    struct Node* queue[100];
+    int front = 0, rear = 0;
+
+    queue[rear++] = root;  // Enqueue root
+
+    while (front < rear) {
+        struct Node* current = queue[front++];  // Dequeue
+
+        printf("%d ", current->data);  // Print current node
+
+        // Enqueue left and right children if they exist
+        if (current->left) queue[rear++] = current->left;
+        if (current->right) queue[rear++] = current->right;
+    }
+}
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5, 6, 7};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    // Build the complete binary tree from the array
+    struct Node* root = buildCBT(arr, n, 0);
+
+    // Print the complete binary tree in level order
+    printf("Level Order Traversal: ");
+    printLevelOrder(root);
+    return 0;
+}
